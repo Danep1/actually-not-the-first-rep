@@ -8,6 +8,12 @@ import numpy as np
 if __name__ == "__main__":
     input_file = "SOUND.WAV"
     try:
+        GPIO.setmode(GPIO.BCM)
+        leds = [26, 19, 13, 6, 5, 11, 9, 10]
+        config = [0 for _ in range(8)]
+        GPIO.setup(leds, GPIO.OUT)
+        GPIO.output(leds, config)
+
         n, sound = wav.read(input_file)
         print()
         print("Количество каналов: ", sound.shape[1])
@@ -16,11 +22,13 @@ if __name__ == "__main__":
         print()
 
         t = np.arange(0, sound.shape[0] / n, 1/n)
-        show_plot(t, sound[:,0])
+        #show_plot(t, sound[:,0])
 
-        u = np.array(map(lambda x: np.array(map(int, bin(x)[2:].rjust(16, str(0)))), sound))
-
-
+        for i in sound[:,0]:
+            num2decLight(abs(i // 128), leds)
+            sleep(1 / n)
+    except ValueError:
+        print(i)
     except KeyboardInterrupt:
         GPIO.cleanup()
     finally:    
